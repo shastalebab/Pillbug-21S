@@ -1,11 +1,12 @@
 #include "main.h"  // IWYU pragma: keep
 
+// Global variable definitions
 AutonMode autonMode = BRAIN;
 Coordinate currentPoint = {0, 0, 0};
 vector<Coordinate> autonPath = {};
 
 //
-// Internal math
+// Utility functions
 //
 
 double getDistance(Coordinate point1, Coordinate point2) {
@@ -143,6 +144,10 @@ void setPosition(double x, double y, double t) {
 	autonPath.push_back(currentPoint);
 }
 
+double getDistanceActual() { 
+	return (distanceSens.get() / 25.4) + 7.875; 
+}
+
 //
 // Wait wrappers
 //
@@ -211,15 +216,13 @@ void delayMillis(int millis, bool ignore) {
 			break;
 	}
 	if(!ignore) {
-	currentPoint.left = KEY;
-	currentPoint.right = millis;
-	autonPath.push_back(currentPoint);
+		currentPoint.left = KEY;
+		currentPoint.right = millis;
+		autonPath.push_back(currentPoint);
 	}
 }
 
-void delayMillis(int millis) {
-	delayMillis(millis, false);
-}
+void delayMillis(int millis) { delayMillis(millis, false); }
 
 //
 // Move to point wrappers
@@ -443,7 +446,7 @@ void swingSet(ez::e_swing side, double theta, double main) {
 }
 
 //
-// Print path
+// Print path data
 //
 
 void getPath() {

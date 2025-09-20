@@ -1,10 +1,10 @@
+#include "drive.hpp"
 #include "main.h"  // IWYU pragma: keep
-#include "pros/misc.hpp"
 
 // // // // // // Tasks & Non-UI // // // // // //
 
 //
-// Object creation
+// Object definitions
 //
 
 lv_obj_t* main_tv = lv_tileview_create(NULL);
@@ -47,7 +47,7 @@ LV_IMG_DECLARE(colorindOverlay);
 LV_IMG_DECLARE(robot);
 LV_IMG_DECLARE(motorOverlay);
 
-// // // // // // Tasks & Non-UI // // // // // //
+// // // // // // Tasks & Other Definitions // // // // // //
 
 //
 // Auton Selector
@@ -87,6 +87,7 @@ void resetViewer(bool full) {
 		autonPath = {};
 		auton_sel.selector_callback();
 		pathDisplay = injectPath(autonPath, .5);
+		getPathInjected();
 		autonMode = preference;
 		lv_img_set_src(autonField, &(allianceColor == BLUE ? blue_alliance : red_alliance));
 	}
@@ -131,21 +132,26 @@ vector<MotorDisp> chassisMotors = {MotorDisp(&chassis.left_motors[0], "front lef
 								   MotorDisp(&chassis.left_motors[2], "back left", lv_color_lighten(pink, 120), 50),
 								   MotorDisp(&chassis.right_motors[2], "back right", lv_color_lighten(violet, 120), 50)};
 
-vector<MotorDisp> intakeMotors = {
-	MotorDisp(&intakeFirst, "first stage", lv_color_lighten(blue, 80), 50), MotorDisp(&intakeSorter, "second stage", lv_color_lighten(blue, 80), 50),
-	MotorDisp(&intakeHoarder, "third stage", lv_color_lighten(blue, 80), 50), MotorDisp(&intakeIndexer, "fourth stage", lv_color_lighten(blue, 80), 50)};
+vector<MotorDisp> intakeMotors = {MotorDisp(&intakeFirst, "first stage", lv_color_lighten(blue, 80), 50),
+								  MotorDisp(&intakeSecond, "second stage", lv_color_lighten(blue, 80), 50),
+								  MotorDisp(&intakeIndexer, "third stage", lv_color_lighten(blue, 80), 50)};
 
-MotorTab chassisTabObj = MotorTab("chassis", theme_color, &chassis.leftPID.error, 24, chassisMotors, drive_test, false,
+MotorTab chassisTabObj = 
+	MotorTab("chassis", theme_color, &chassis.leftPID.error, 24, chassisMotors, drive_test, false,
 								  PidTunerValues(0.25, 0.05, 0.25, &chassis.fwd_rev_drivePID), chassisTab);
-MotorTab intakeTabObj = MotorTab("intake", theme_color, &chassis.leftPID.error, 24, intakeMotors, drive_test, false,
+MotorTab intakeTabObj = 
+	MotorTab("intake", theme_color, &chassis.leftPID.error, 24, intakeMotors, drive_test, false,
 								 PidTunerValues(0.25, 0.05, 0.25, &chassis.fwd_rev_drivePID), intakeTab);
-MotorTab driveTabObj = MotorTab("drive PID", theme_color, &chassis.leftPID.error, 24, chassisMotors, drive_test, true,
-								PidTunerValues(0.25, 0.05, 0.25, &chassis.forward_drivePID), driveTab);
+MotorTab driveTabObj = 
+	MotorTab("drive PID", theme_color, &chassis.leftPID.error, 24, chassisMotors, drive_test, true,
+								PidTunerValues(0.25, 0.05, 0.25, &chassis.fwd_rev_drivePID), driveTab);
 MotorTab turnTabObj =
 	MotorTab("turn PID", theme_color, &chassis.turnPID.error, 360, chassisMotors, turn_test, true, PidTunerValues(0.25, 0.05, 0.25, &chassis.turnPID), turnTab);
-MotorTab swingTabObj = MotorTab("swing PID", theme_color, &chassis.swingPID.error, 90, chassisMotors, swing_test, true,
+MotorTab swingTabObj = 
+	MotorTab("swing PID", theme_color, &chassis.swingPID.error, 90, chassisMotors, swing_test, true,
 								PidTunerValues(0.25, 0.05, 0.25, &chassis.fwd_rev_swingPID), swingTab);
-MotorTab headingTabObj = MotorTab("heading PID", theme_color, &chassis.turnPID.error, 180, chassisMotors, heading_test, true,
+MotorTab headingTabObj = 
+	MotorTab("heading PID", theme_color, &chassis.turnPID.error, 180, chassisMotors, heading_test, true,
 								  PidTunerValues(0.25, 0.05, 0.25, &chassis.headingPID), headingTab);
 
 MotorTab* selectedTabObj = &driveTabObj;
@@ -164,8 +170,8 @@ void motorUpdateTask() {
 	ofstream swingVelo;
 	if(pros::usd::is_installed()) swingVelo.open("/usd/swing_curve.txt", ios::out | ios::app);
 	if(swingVelo.is_open()) {
-					swingVelo << "=====================================\n";
-				}
+		swingVelo << "=====================================\n";
+	}
 	while(true) {
 		if(lv_tileview_get_tile_act(main_tv) == pidTuner) {
 			for(auto motor_to_update : motors_to_update) {
@@ -186,7 +192,8 @@ void motorUpdateTask() {
 				}
 			}
 			cnt++;
-		} else cnt = 0;
+		} else
+			cnt = 0;
 		pros::delay(10);
 	}
 }

@@ -2,22 +2,25 @@
 
 #include "EZ-Template/api.hpp"
 #include "api.h"
+#include "pros/distance.hpp"
 #include "pros/motors.hpp"
 
 extern Drive chassis;
 
 // Your motors, sensors, etc. should go here.  Below are examples
 
-inline pros::Optical colorSens(13);
-inline pros::Optical proximitySens(1);
+inline pros::Optical colorSens(19);
+inline pros::Optical proximitySens(20);
+inline pros::Distance distanceSens(1);
 
 inline pros::Motor intakeNone(21);
-inline pros::Motor intakeFirst(3);
-inline pros::Motor intakeSorter(-5);
-inline pros::Motor intakeHoarder(6);
-inline pros::Motor intakeIndexer(7);
+inline pros::Motor intakeFirst(18);
+inline pros::Motor intakeSecond(-8);
+inline pros::Motor intakeIndexer(10);
 inline ez::Piston scraper('A');
-inline ez::Piston dumper('B');
+inline ez::Piston descore('B');
+inline ez::Piston redirect('C');
+inline ez::Piston park('D');
 
 class Jammable {
    private:
@@ -62,20 +65,22 @@ enum Colors { BLUE = 0, NEUTRAL = 1, RED = 2 };
 extern Colors allianceColor;
 extern Jammable none;
 extern Jammable first;
-extern Jammable sorter;
-extern Jammable hoarder;
+extern Jammable second;
 extern Jammable indexer;
 
 extern Jammable* targetMotor;
 
 bool shift();
 
-void setIntake(int first_speed, int second_speed, int third_speed, int fourth_speed);
-void setIntake(int intake_speed, int snail_speed, int outtake_speed);
+void setIntake(int first_speed, int second_speed, int third_speed, bool redirect_up);
+void setIntake(int first_speed, int second_speed, int third_speed);
+void setIntake(int intake_speed, int outtake_speed, bool redirect_up);
 void setIntake(int intake_speed, int outtake_speed);
+void setIntake(int speed, bool redirect_up);
 void setIntake(int speed);
 void setScraper(bool state);
-void setDumper(bool state);
+void setDescore(bool state);
+void setPark(bool state);
 
 void setAlliance(Colors alliance);
 void colorToggle();
@@ -85,7 +90,8 @@ void sendHaptic(string input);
 
 void setIntakeOp();
 void setScraperOp();
-void setDumperOp();
+void setDescoreOp();
+void setParkOp();
 
 void colorTask();
 void antiJamTask();

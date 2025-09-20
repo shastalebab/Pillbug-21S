@@ -45,6 +45,7 @@ std::vector<Coordinate> injectPath(std::vector<Coordinate> coordList, double loo
 // Set position wrappers
 void setPosition(double x, double y);
 void setPosition(double x, double y, double t);
+double getDistanceActual();
 
 // Wait wrappers
 void pidWait(Wait type);
