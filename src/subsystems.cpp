@@ -1,5 +1,4 @@
 #include "main.h"  // IWYU pragma: keep
-#include "pros/misc.h"
 
 // Internal targets to aid tasks
 Colors allianceColor = NEUTRAL;
